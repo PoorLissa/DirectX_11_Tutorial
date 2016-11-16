@@ -10,12 +10,11 @@ cbuffer MatrixBuffer
 cbuffer CameraBuffer
 {
 	float3 cameraPosition;
-	float padding;
+	float  padding;
 };
 
 // Both structures now have a 3 float normal vector.
 // The normal vector is used for calculating the amount of light by using the angle between the direction of the normal and the direction of the light.
-
 struct VertexInputType
 {
     float4 position : POSITION;

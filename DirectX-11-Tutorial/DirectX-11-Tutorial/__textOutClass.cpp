@@ -38,7 +38,7 @@ bool TextOutClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceC
 		return false;
 
 	// Initialize the font object.
-	result = m_Font->Initialize(device, "../DirectX-11-Tutorial/data/fontdata.txt", L"../DirectX-11-Tutorial/data/font.dds");
+	result = m_Font->Initialize(device, "../DirectX-11-Tutorial/data/_fontdata.txt", L"../DirectX-11-Tutorial/data/font.dds");
 	if(!result) {
 		MessageBox(hwnd, L"Could not initialize the font object.", L"Error", MB_OK);
 		return false;

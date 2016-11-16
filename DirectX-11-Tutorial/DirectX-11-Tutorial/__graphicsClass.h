@@ -1,3 +1,14 @@
+/*
+	LINKS:
+
+	--- Instancing ---
+	http://http.developer.nvidia.com/GPUGems2/gpugems2_chapter03.html	// it's rather about DirectX 9 than 11. Not sure if this fits me right.
+
+	--- Sprite Atlas ---
+	http://dallinwellington.com/rendering/sprite-atlas-rendering-with-dx-hlsl/
+
+*/
+
 #ifndef _GRAPHICSCLASS_H_
 #define _GRAPHICSCLASS_H_
 
@@ -12,13 +23,31 @@
 #include "__lightShaderClass.h"
 #include "__lightClass.h"
 #include "__bitmapClass.h"
+#include "__textOutClass.h"
+#include "___Sprite.h"
 
+#include "__bitmapClassInstancing.h"
+#include "__textureShaderClassInstancing.h"
 
+// ---------------------------------------------------------------------------------------
+#define fullScreen
+#undef  fullScreen
 
-const bool	FULL_SCREEN   = false;
-const bool	VSYNC_ENABLED = true;
+#if defined fullScreen
+const bool FULL_SCREEN    = true;
+const int  windowedWidth  = 0;
+const int  windowedHeight = 0;
+#else
+const bool FULL_SCREEN    = false;
+const int  windowedWidth  = 800;
+const int  windowedHeight = 600;
+#endif
+
+const bool	VSYNC_ENABLED = false;
 const float SCREEN_DEPTH  = 1000.0f;
 const float SCREEN_NEAR   = 0.1f;
+// ---------------------------------------------------------------------------------------
+
 
 class GraphicsClass {
  public:
@@ -28,13 +57,11 @@ class GraphicsClass {
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame();
+	bool Frame(const int &, const int &, const float &);
 
 	void logMsg(char *);
 
- private:
-	//bool Render();
-	 bool Render(float);
+	bool Render(const float &, const float &, const int &, const int &, bool = false);
 
  private:
 	 d3dClass				*m_d3d;
@@ -49,11 +76,16 @@ class GraphicsClass {
 
 	 // We create a new private BitmapClass object here.
 	 BitmapClass			*m_Bitmap;
-	 vector<BitmapClass*>	 m_BitmapVector;
+	 BitmapClass			*m_Cursor;
 
-	 struct PT { float X; float Y; };
+	 vector<Sprite*>		 m_spriteVec;
+	 BitmapClass			*m_BitmapSprite;
 
-	 vector<PT> m_coordsVec;
+	// There is a new private variable for the TextClass object.
+	TextOutClass			*m_TextOut;
+
+	BitmapClass_Instancing	*m_BitmapIns;
+	TextureShaderClass_Instancing *m_TextureShaderIns;
 };
 
 #endif

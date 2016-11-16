@@ -5,11 +5,8 @@
 
 #include <windows.h>
 
-#include "__directInput.h"
+#include "__inputClass.h"
 #include "__graphicsClass.h"
-#include "__fpsClass.h"
-#include "__cpuClass.h"
-#include "__highPrecTimer.h"
 
 
 
@@ -31,20 +28,15 @@ class SystemClass {
 	void ShutdownWindows();
 
  private:
-	LPCWSTR	  m_applicationName;
-	HINSTANCE m_hinstance;
-	HWND	  m_hwnd;
+	LPCWSTR		m_applicationName;
+	HINSTANCE	m_hinstance;
+	HWND		m_hwnd;
 
-	DirectInputClass *m_Input;
-	GraphicsClass	 *m_Graphics;
-
-	// Timer, FPS and CPU usage objects
-	FpsClass			*m_Fps;
-	CpuClass			*m_Cpu;
-	HighPrecisionTimer	*m_Timer;
+	InputClass		*m_Input;
+	GraphicsClass	*m_Graphics;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-static SystemClass *ApplicationHandle = 0;
+static SystemClass* ApplicationHandle = 0;
 
 #endif

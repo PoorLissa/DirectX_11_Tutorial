@@ -183,8 +183,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//result = m_Bitmap->Initialize(m_d3d->GetDevice(), screenWidth, screenHeight, L"../DirectX-11-Tutorial/data/i.jpg", 48, 48);
 	result = m_Bitmap->Initialize(m_d3d->GetDevice(), screenWidth, screenHeight, L"../DirectX-11-Tutorial/data/pic4.png", 256, 256);
 	
-	// lala
-	int NUM = 500;
+	int NUM = 200;
 	PT  pt;
 
 	for (int i = 0; i < NUM; i++) {
@@ -422,23 +421,36 @@ bool GraphicsClass::Render(float rotation)
 										viewMatrix, orthoMatrix, m_Bitmap->GetTexture()) )
 			return false;
 
-		// render bitmaps from vector
-#if 1
+		D3DXMatrixTranslation(&matTrans, -300.0f, -100.0f, 0.0f);
+		D3DXMatrixScaling(&matScale, 1.5f + 0.1*sin(15 * zoom), 1.5f + 0.1*sin(3 * zoom), 1.0f);
 
-		xCenter = 400;
-		yCenter = 300;
 
-		if (!m_BitmapVector[0]->Render(m_d3d->GetDeviceContext(), xCenter - 24, yCenter - 24))
+		if ( !m_TextureShader->Render(m_d3d->GetDeviceContext(), m_Bitmap->GetIndexCount(),
+										worldMatrixZ
+										* matTrans
+										* matScale
+										,
+										viewMatrix, orthoMatrix, m_Bitmap->GetTexture()) )
 			return false;
 
+		// render bitmaps from vector
+#if 1
 		for (int i = 0; i < m_BitmapVector.size(); i++) {
 
-			int x = m_coordsVec[i].X + 200;
+			if ( !m_BitmapVector[i]->Render(m_d3d->GetDeviceContext(), xCenter - 24, yCenter - 24) )
+				return false;
+
+			int x = m_coordsVec[i].X;
 			int y = m_coordsVec[i].Y;
 
 			D3DXMatrixRotationZ(&worldMatrixZ, (rotation+i)/ 5);
-			D3DXMatrixTranslation(&matTrans, x + 10 * tan(rotation + 2 * i) - 400.0f, y - 300.0f, 0.0f);
-			D3DXMatrixScaling(&matScale, 1.0f + 0.1*sin(10*zoom), 1.0f + 0.1*sin(10*zoom), 1.0f);
+			//D3DXMatrixTranslation(&matTrans, x + 10*cos(rotation + 2*i) - 400.0f, y - 300.0f, 0.0f);
+
+			//D3DXMatrixTranslation(&matTrans, x + 10 * tan(rotation + 2 * i) * sin(i*20) - 400.0f, y - 300.0f, 0.0f);
+
+			D3DXMatrixTranslation(&matTrans, x + 10 * tan(rotation + 2 * i) * sin(i * 20) - 400.0f, y + 10 * tan(rotation + 2 * i) * cos(i * 20) - 300.0f, 0.0f);
+
+			D3DXMatrixScaling(&matScale, 1.0f + 0.5*sin(10*zoom), 1.0f + 0.5*sin(10*zoom), 1.0f);
 
 			if (!m_TextureShader->Render(m_d3d->GetDeviceContext(), m_BitmapVector[i]->GetIndexCount(),
 											worldMatrixZ

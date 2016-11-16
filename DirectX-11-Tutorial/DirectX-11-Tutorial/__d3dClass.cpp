@@ -10,6 +10,9 @@ d3dClass::d3dClass()
 	m_depthStencilState  = 0;
 	m_depthStencilView   = 0;
 	m_rasterState		 = 0;
+
+	// Initialize the new depth stencil state to null in the class constructor.
+	m_depthDisabledStencilState = 0;
 }
 
 d3dClass::d3dClass(const d3dClass &other)
@@ -42,8 +45,11 @@ bool d3dClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3D11_RASTERIZER_DESC			 rasterDesc;
 	D3D11_VIEWPORT					 viewport;
 
-	float fieldOfView, screenAspect;
+	float							fieldOfView;
+	float							screenAspect;
 
+	// We have a new depth stencil description variable for setting up the new depth stencil.
+	D3D11_DEPTH_STENCIL_DESC		depthDisabledStencilDesc;
 
 
 	// Store the vsync setting.
@@ -284,7 +290,6 @@ bool d3dClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// Setup the raster description which will determine how and what polygons will be drawn.
 	rasterDesc.AntialiasedLineEnable = false;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
-	//rasterDesc.CullMode = D3D11_CULL_NONE;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
@@ -324,8 +329,72 @@ bool d3dClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// Initialize the world matrix to the identity matrix.
 	D3DXMatrixIdentity(&m_worldMatrix);
 
-	// Create an orthographic projection matrix for 2D rendering.
-	D3DXMatrixOrthoLH(&m_orthoMatrix, (float)screenWidth, (float)screenHeight, screenNear, screenDepth);
+	// --- for 2D Rendering ---
+	{
+		// Create an orthographic projection matrix for 2D rendering.
+		D3DXMatrixOrthoLH(&m_orthoMatrix, (float)screenWidth, (float)screenHeight, screenNear, screenDepth);
+
+		// Here we setup the second description of the depth stencil.
+		// Notice the only difference between this new depth stencil and the old one is the DepthEnable is set to false here for 2D drawing.
+
+		// Clear the second depth stencil state before setting the parameters.
+		ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
+
+		depthDisabledStencilDesc.DepthEnable					= false;
+		depthDisabledStencilDesc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ALL;
+		depthDisabledStencilDesc.DepthFunc						= D3D11_COMPARISON_LESS;
+		depthDisabledStencilDesc.StencilEnable					= true;
+		depthDisabledStencilDesc.StencilReadMask				= 0xFF;
+		depthDisabledStencilDesc.StencilWriteMask				= 0xFF;
+		depthDisabledStencilDesc.FrontFace.StencilFailOp		= D3D11_STENCIL_OP_KEEP;
+		depthDisabledStencilDesc.FrontFace.StencilDepthFailOp	= D3D11_STENCIL_OP_INCR;
+		depthDisabledStencilDesc.FrontFace.StencilPassOp		= D3D11_STENCIL_OP_KEEP;
+		depthDisabledStencilDesc.FrontFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+		depthDisabledStencilDesc.BackFace.StencilFailOp			= D3D11_STENCIL_OP_KEEP;
+		depthDisabledStencilDesc.BackFace.StencilDepthFailOp	= D3D11_STENCIL_OP_DECR;
+		depthDisabledStencilDesc.BackFace.StencilPassOp			= D3D11_STENCIL_OP_KEEP;
+		depthDisabledStencilDesc.BackFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+	
+		// Now create the new depth stencil.
+
+		// Create the state using the device.
+		result = m_device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_depthDisabledStencilState);
+		if (FAILED(result))
+			return false;
+	}
+
+	// Adding Alpha-Blend State
+	{
+		// Clear the blend state description.
+		D3D11_BLEND_DESC blendStateDescription;
+		ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
+
+		// Create an alpha enabled blend state description.
+		blendStateDescription.AlphaToCoverageEnable			 = false;
+		blendStateDescription.RenderTarget[0].BlendEnable	 = true;
+		//blendStateDescription.RenderTarget[0].SrcBlend	 = D3D11_BLEND_ONE;
+		blendStateDescription.RenderTarget[0].SrcBlend		 = D3D11_BLEND_SRC_ALPHA;
+		blendStateDescription.RenderTarget[0].DestBlend		 = D3D11_BLEND_INV_SRC_ALPHA;
+		blendStateDescription.RenderTarget[0].BlendOp		 = D3D11_BLEND_OP_ADD;
+		blendStateDescription.RenderTarget[0].SrcBlendAlpha	 = D3D11_BLEND_ONE;
+		blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendStateDescription.RenderTarget[0].BlendOpAlpha	 = D3D11_BLEND_OP_ADD;
+		blendStateDescription.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+		blendStateDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		// Create the blend state using the description.
+		result = m_device->CreateBlendState(&blendStateDescription, &m_alphaEnableBlendingState);
+		if (FAILED(result))
+			return false;
+
+		// Modify the description to create an alpha disabled blend state description.
+		blendStateDescription.RenderTarget[0].BlendEnable = false;
+
+		// Create the blend state using the description.
+		result = m_device->CreateBlendState(&blendStateDescription, &m_alphaDisableBlendingState);
+		if (FAILED(result))
+			return false;
+	}
 
 	return true;
 }
@@ -335,6 +404,22 @@ void d3dClass::Shutdown()
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
 	if (m_swapChain)
 		m_swapChain->SetFullscreenState(false, NULL);
+
+	// Here we release the new (second) depth stencil
+	if (m_depthDisabledStencilState) {
+		m_depthDisabledStencilState->Release();
+		m_depthDisabledStencilState = 0;
+	}
+
+	if (m_alphaEnableBlendingState) {
+		m_alphaEnableBlendingState->Release();
+		m_alphaEnableBlendingState = 0;
+	}
+
+	if (m_alphaDisableBlendingState) {
+		m_alphaDisableBlendingState->Release();
+		m_alphaDisableBlendingState = 0;
+	}
 
 	if (m_rasterState) {
 		m_rasterState->Release();
@@ -446,4 +531,35 @@ void d3dClass::GetVideoCardInfo(char* cardName, int& memory)
 	strcpy_s(cardName, 128, m_videoCardDescription);
 	memory = m_videoCardMemory;
 	return;
+}
+
+// These are the new 2 functions for enabling and disabling the Z buffer.
+// To turn Z buffering on we set the original depth stencil.
+// To turn Z buffering off we set the new depth stencil that has depthEnable set to false.
+// Generally the best way to use these functions is first do all your 3D rendering,
+// then turn the Z buffer off and do your 2D rendering, and then turn the Z buffer on again.
+void d3dClass::TurnZBufferOn()
+{
+	m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 1);
+}
+
+void d3dClass::TurnZBufferOff()
+{
+	m_deviceContext->OMSetDepthStencilState(m_depthDisabledStencilState, 1);
+}
+
+void d3dClass::TurnOnAlphaBlending()
+{
+	float blendFactor[] = { 0, 0, 0, 0 };
+
+	// Turn on the alpha blending.
+	m_deviceContext->OMSetBlendState(m_alphaEnableBlendingState, blendFactor, 0xffffffff);
+}
+
+void d3dClass::TurnOffAlphaBlending()
+{
+	float blendFactor[] = { 0, 0, 0, 0 };
+
+	// Turn off the alpha blending.
+	m_deviceContext->OMSetBlendState(m_alphaDisableBlendingState, blendFactor, 0xffffffff);
 }

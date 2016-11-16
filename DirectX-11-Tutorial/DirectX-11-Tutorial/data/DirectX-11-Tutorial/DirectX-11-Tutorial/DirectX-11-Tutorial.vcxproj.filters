@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{09ddff11-2f4c-49a4-9709-17f29719f931}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__systemClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__graphicsClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__d3dClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__modelClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__cameraClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__colorShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__textureClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__textureShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__lightShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__lightClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__bitmapClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__fontClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__fontShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="__textOutClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="__graphicsClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__systemClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__inputClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__d3dClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__modelClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__cameraClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__textureClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__textureShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__lightShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__lightClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__bitmapClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__fontClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__fontShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__textOutClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__colorShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="_shaderColor.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="_shaderColor.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="_shaderFont.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="_shaderFont.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="_shaderLight.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="_shaderLight.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="_shaderTexture.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="_shaderTexture.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
